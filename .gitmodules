@@ -1,0 +1,3 @@
+[submodule "src/scripts/lane_detection"]
+	path = src/scripts/lane_detection
+	url = https://github.com/magedrifaat/Lane-Detection.git
