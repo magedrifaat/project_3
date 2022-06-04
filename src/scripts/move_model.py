@@ -36,7 +36,7 @@ class movement :
             self.v += self.v_step
         self.move.linear.x = self.v_max
         self.move.angular.z = 0.5* self.u 
-        print('on')
+        # print('on')
 
 
     def move_backward(self):    
@@ -67,6 +67,8 @@ class movement :
                 dis.append(reading)        
         if len(dis) != 0:
             self.curent_dis = sum(dis) / len(dis)
+        
+        
 
 
 
@@ -80,8 +82,8 @@ if __name__ == "__main__":
     while not rospy.is_shutdown() :
         pid.topic = mov.topic
         pid.error_listner()
-        if mov.changeing != 'done' and abs(pid.e) < 0.05:
-            mov.changeing = 'done'
+        # if mov.changeing != 'done' and abs(pid.e) < 0.05:
+        #     mov.changeing = 'done'
 
         c = rospy.wait_for_message("/command", Float32)
         if c.data == 0:
@@ -90,9 +92,9 @@ if __name__ == "__main__":
             status = "forward"
             mov.v_max = c.data 
 
-        print(pid.e)
+        print("lane erroe:", pid.e)
         if mov.changeing == 'done':
-            print('in')
+            print('cheeking obstacle')
             mov.aviod()
             if mov.curent_dis < 1 and mov.curent_dis != -1:
                 print(pid.topic)
@@ -100,10 +102,8 @@ if __name__ == "__main__":
 
         pid.compute()
         mov.u = pid.output
-        print(status)
+        print('status: ', status)
         if status == 'forward':
-            print('on')
-
             mov.move_forward()
 
         elif status == 'backward':
@@ -111,11 +111,12 @@ if __name__ == "__main__":
 
         elif status == 'stop':
             mov.stop()
-        elif status == 'lane_change' and not mov.changeing == 'running':
+        elif status == 'lane_change':
             print('change')
             mov.change()
 
         mov.publish_vel()
+        print("############")
         rate.sleep()
 
 #rosservice call /gazebo/reset_simulation "{}"
