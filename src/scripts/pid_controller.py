@@ -5,7 +5,7 @@ from low_pass_filter import filter
 
 
 class PID:
-    def __init__(self, kp = 1.1, kd = 0.6 , ki = 0.01, rate = 10 ,topic = 'left_lane_value'):
+    def __init__(self, kp = 1.1, kd = 0.6 , ki = 0.01, rate = 10 ,topic = '/right_lane_value'):
         self.kp = kp
         self.ki = ki 
         self.kd = kd 

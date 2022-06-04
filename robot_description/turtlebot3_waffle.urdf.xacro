@@ -3,9 +3,9 @@
   <xacro:include filename="$(find project_3)/robot_description/common_properties.xacro"/>
   <xacro:include filename="$(find project_3)/robot_description/turtlebot3_waffle.gazebo.xacro"/>
 
-  <xacro:property name="r200_cam_rgb_px" value="0.0"/>
+  <xacro:property name="r200_cam_rgb_px" value="0.22"/>
   <xacro:property name="r200_cam_rgb_py" value="0.0"/>
-  <xacro:property name="r200_cam_rgb_pz" value="0.25"/>
+  <xacro:property name="r200_cam_rgb_pz" value="0.35"/>
   <xacro:property name="r200_cam_depth_offset" value="0.01"/>
 
   <link name="base_footprint"/>
@@ -221,7 +221,7 @@
   </link>
 
   <joint name="camera_rgb_joint" type="fixed">
-    <origin xyz="${r200_cam_rgb_px} ${r200_cam_rgb_py} ${r200_cam_rgb_pz}" rpy="0 1.05 0"/>
+    <origin xyz="${r200_cam_rgb_px} ${r200_cam_rgb_py} ${r200_cam_rgb_pz}" rpy="0 1.57 0"/>
     <parent link="camera_link"/>
     <child link="camera_rgb_frame"/>
   </joint>

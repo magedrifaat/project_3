@@ -39,10 +39,10 @@
         <param name="plant_order" value="2" />
     </node>
 
-    <node pkg = "project_3" type="pid_test.py" name = "pid_test"/>
-    <node pkg = "project_3" type="camera_publisher.py" name = "camera_image"/>
+    <node pkg = "project_3" type="pid_test.py" name = "pid_test" />
+    <!-- <node pkg = "project_3" type="camera_publisher.py" name = "camera_image"/> -->
     <node pkg = "project_3" type="camera_image_subscriber.py" name = "camera_error"/>
-    <!-- <node pkg = "project_3" type="move_model.py" name = "movement"/> -->
+    <node pkg = "project_3" type="move_model.py" name = "movement" output="screen"/>
 
     <!-- rqt_plot is a resource hog, so if you're seeing high CPU usage, don't launch rqt_plot  -->
     <!-- <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot"

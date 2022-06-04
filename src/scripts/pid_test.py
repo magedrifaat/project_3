@@ -54,10 +54,10 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         v,w = listner()
         wr, wl = getMotorsSpeed(abs(v),w)
-        print(wr)
+        # print(wr)
         pub_r.publish(wr)
         pub_l.publish(wl)
-        print('in')
+        # print('in')
        
         if v == 0 and w == 0:
             pwm_r = 0
