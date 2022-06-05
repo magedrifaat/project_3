@@ -160,7 +160,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='project_3'>
+      <model name='project_3_box'>
         <pose frame=''>1.57492 0.050409 -0.001 -0.003132 -1e-06 -7e-06</pose>
         <scale>1 1 1</scale>
         <link name='base_footprint'>
