@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from decimal import MAX_EMAX
 import rospy
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
@@ -24,8 +25,22 @@ class movement :
         self.topic_names = ['/left_lane_value', '/right_lane_value']
         self.topic = self.topic_names[1]
         self.changeing = 'done'
+        self.beside = False
 
 
+
+    def lidarListner(self, min_angle, max_angle):
+        dis = []
+        lidar = rospy.wait_for_message('/scan', LaserScan)
+        data =lidar.ranges 
+        avr = -1
+        for i in range(min_angle, max_angle):
+            reading = data[i-1]
+            if str(reading) != "inf":
+                dis.append(reading)        
+        if len(dis) != 0:
+            avr = sum(dis) / len(dis)
+        return avr
 
     def publish_vel(self):
         self.pub_move.publish(self.move)
@@ -56,17 +71,29 @@ class movement :
         self.topic =self.topic_names[(i + 1) % len(self.topic_names)]
 
     def aviod(self):
-        lidar = rospy.wait_for_message('/scan', LaserScan)
-        data =lidar.ranges 
-        max_angel = round(np.arctan2(self.lane_width,self.min_dist) * (180 / np.pi))
-        min_angel = round(np.arctan2(-self.lane_width, self.min_dist) * (180/ np.pi))
-        dis = [] 
-        for i in range(min_angel, max_angel):
-            reading = data[i-1]
-            if str(reading) != "inf":
-                dis.append(reading)        
-        if len(dis) != 0:
-            self.curent_dis = sum(dis) / len(dis)
+        max_angle = round(np.arctan2(self.lane_width,self.min_dist) * (180 / np.pi))
+        min_angle = round(np.arctan2(-self.lane_width, self.min_dist) * (180/ np.pi))
+        dis = self.lidarListner(min_angle, max_angle)
+        if dis != -1:
+            self.curent_dis = dis
+
+    def end_change(self):
+        min_angle = 0
+        max_angle = 0 
+        if self.topic == self.topic_names[0]:
+            min_angle = 90
+            max_angle = 120
+        elif self.topic == self.topic_names[1]:
+            min_angle = 240
+            max_angle = 270
+        
+        beside_distance = self.lidarListner(min_angle, max_angle)
+
+        if beside_distance != -1:
+            if beside_distance < 0.2 :
+                self.beside = True
+            else:
+                self.beside = False
         
         
 
@@ -76,7 +103,6 @@ class movement :
 if __name__ == "__main__":
     mov = movement()
     status = 'stop'
-    print(mov.changeing)
     pid = PID(kp = 1.1, kd = 0.6 , ki = 0.01, rate = mov.f)
     rate = rospy.Rate(mov.f)
     while not rospy.is_shutdown() :
@@ -85,20 +111,29 @@ if __name__ == "__main__":
         # if mov.changeing != 'done' and abs(pid.e) < 0.05:
         #     mov.changeing = 'done'
 
+        print(mov.changeing)
         c = rospy.wait_for_message("/command", Float32)
         if c.data == 0:
             status = "stop"
         else:
             status = "forward"
             mov.v_max = c.data 
-
+        
         print("lane erroe:", pid.e)
+
         if mov.changeing == 'done':
             print('cheeking obstacle')
             mov.aviod()
             if mov.curent_dis < 1 and mov.curent_dis != -1:
                 print(pid.topic)
                 status = 'lane_change'
+        
+        # elif mov.changeing == 'running':
+        #     mov.end_change()
+        #     # if mov.beside:
+        #     print('********')
+        #     print('there is something beside')
+        #     print('********')
 
         pid.compute()
         mov.u = pid.output
