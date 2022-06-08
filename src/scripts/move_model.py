@@ -26,7 +26,7 @@ class movement :
         self.topic = self.topic_names[1]
         self.changeing = 'done'
         self.beside = False
-
+        self.end = False
 
 
     def lidarListner(self, min_angle, max_angle):
@@ -80,10 +80,10 @@ class movement :
     def end_change(self):
         min_angle = 0
         max_angle = 0 
-        if self.topic == self.topic_names[0]:
+        if self.topic == self.topic_names[1]:
             min_angle = 90
             max_angle = 120
-        elif self.topic == self.topic_names[1]:
+        elif self.topic == self.topic_names[0]:
             min_angle = 240
             max_angle = 270
         
@@ -94,6 +94,8 @@ class movement :
                 self.beside = True
             else:
                 self.beside = False
+        if self.beside == True:
+            self.end = True
         
         
 
@@ -128,12 +130,16 @@ if __name__ == "__main__":
                 print(pid.topic)
                 status = 'lane_change'
         
-        # elif mov.changeing == 'running':
-        #     mov.end_change()
-        #     # if mov.beside:
-        #     print('********')
-        #     print('there is something beside')
-        #     print('********')
+        elif mov.changeing == 'running':
+            mov.end_change()
+            if mov.beside:
+                print('********')
+                print('there is something beside')
+                print('********')
+            else:
+                if mov.end == True:
+                    mov.changeing = 'doen'
+                    mov.end = False
 
         pid.compute()
         mov.u = pid.output
