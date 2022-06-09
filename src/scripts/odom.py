@@ -3,7 +3,7 @@ import rospy
 from tf import TransformBroadcaster, transformations
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Float64
-from geometry_msgs.msg import TransformStamped, Quaternion
+from geometry_msgs.msg import Quaternion
 import numpy as np
 
 class odom:
@@ -42,41 +42,35 @@ class odom:
         # self.x += (vx * np.sin(self.theta) + vy * np.cos(self.theta)) * t
 
 
-
-
-
-
 if __name__ == "__main__":
-    rospy.init_node('odom',anonymous=True)
-
+    rospy.init_node('odom',anonymous=False)
+    dt = 0
     last_time = rospy.get_rostime().to_sec()
-    rate = rospy.Rate(10)
-
+    i = 1
     odom_pub = rospy.Publisher('odom', Odometry, latch= True, queue_size=50)
     state = odom()
-    odom_transform = TransformStamped()
     odom_quatr = Quaternion()
-    br = TransformBroadcaster()
     odom_msg = Odometry()
+    rate = rospy.Rate(10)
+    br = TransformBroadcaster()
 
-    while not rospy.is_shutdown:
+    while not rospy.is_shutdown():
         curent_time = rospy.get_rostime().to_sec()
-        dt = (curent_time - last_time) if dt > 0 else 0 
+        dt = (curent_time - last_time)
+        if dt < 0:
+            dt = 0
 
         state.listner()
+        print(i, '\n ######')
+        i +=1
         state.compute(dt)
 
-        odom_quatr = transformations.quaternion_from_euler(0, 0 , state.theta)
+        br.sendTransform((state.x, state.y, 0),
+                            transformations.quaternion_from_euler(0, 0 , state.theta),
+                            rospy.get_rostime(),
+                            'base_link',
+                            'odom')
 
-        odom_transform.header.stamp = curent_time
-        odom_transform.header.frame_id = 'odom'
-        odom_transform.child_frame_id = 'base_link'
-
-        odom_transform.transform.translation.x = state.x
-        odom_transform.transform.translation.y = state.y
-        odom_transform.transform.translation.z = 0
-        odom_transform.transform.rotation = odom_quatr
-        br.sendTransform(odom_transform)
 
         odom_msg.header.stamp = curent_time
         odom_msg.header.frame_id = 'odom'
@@ -91,7 +85,6 @@ if __name__ == "__main__":
 
 
         odom_pub.publish(odom_msg)
-
         last_time = rospy.get_rostime().to_sec()
         rate.sleep()
    
