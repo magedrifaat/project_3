@@ -59,10 +59,8 @@ if __name__ == "__main__":
         dt = (curent_time - last_time)
         if dt < 0:
             dt = 0
-
+            
         state.listner()
-        print(i, '\n ######')
-        i +=1
         state.compute(dt)
 
         br.sendTransform((state.x, state.y, 0),
