@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-  <node pkg = "project_3" type="camera_publisher.py" name = "camera_image"/>
-  <node pkg = "project_3" type="camera_image_subscriber.py" name = "camera_error"/>
-  <node pkg = "project_3" type="move_model.py" name = "movement"/>
-
+    <node pkg = "project_3" type="camera_publisher.py" name = "camera_image"/>
+    <node pkg = "project_3" type="camera_image_subscriber.py" name = "camera_error"/>
+    <node pkg = "project_3" type="move_model.py" name = "movement" output="screen"/>
+    <include file="$(find project_3)/launch/pid.launch"/> 
 </launch>

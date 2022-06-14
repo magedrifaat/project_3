@@ -40,17 +40,10 @@
     </node>
 
     <node pkg = "project_3" type="pid_test.py" name = "pid_test" />
-    <!-- <node pkg = "project_3" type="camera_publisher.py" name = "camera_image"/> -->
-    <node pkg = "project_3" type="camera_image_subscriber.py" name = "camera_error"/>
-    <node pkg = "project_3" type="move_model.py" name = "movement" output="screen"/>
+
     <node pkg = 'project_3' type='odom.py' name = 'odom'>
-    <!-- rqt_plot is a resource hog, so if you're seeing high CPU usage, don't launch rqt_plot  -->
-    <!-- <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot"
-    args="/control_effort_l/data /Encoder_l/data /target_l/data" /> -->
 
-    <!-- <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" /> -->
-
-    <!-- <node name="rqt_robot_monitor" pkg="rqt_robot_monitor" type="rqt_robot_monitor" /> -->
+    <include file="$(find lidar_ros_delta2a)/launch/view_delta_lidar.launch"/>
 
     <!-- static Tf brodcast -->
     <node pkg="tf" type="static_transform_publisher" name="map_nav_broadcaster" args="0 0 0 0 0 0 map odom 100"/>

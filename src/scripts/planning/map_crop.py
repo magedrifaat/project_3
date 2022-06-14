@@ -20,7 +20,10 @@ def crop(d):
     for i in range(width,0,-1):
         if np.count_nonzero(m[:,i-1] == -1) == np.shape(m)[0]:
             m = np.delete(m,i-1,1)
-    print(np.shape(m))
+    
+    for i in np.shape(m)[0]:
+        for j in np.shape(m)[1]:
+            if m[i,j] == 
     return list(m)
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ class odom:
         self.x = 0
         self.y = 0
         self.theta = 0
-        self.r = 0.65 / 2
+        self.r = 0.065 / 2
         self.l = 0.23
         self.w_r = 0
         self.w_l = 0
@@ -30,10 +30,10 @@ class odom:
         self.v = (self.w_r + self.w_l) / 2
         self.w = (self.w_r - self.w_l) * self.r / self.l
 
-        self.theta += self.w * t
 
         self.vx = self.v * np.cos(self.theta)
         self.vy = self.v * np.sin(self.theta)
+        self.theta += self.w * t
 
         self.x += self.vx * t 
         self.y += self.vy * t 
@@ -59,9 +59,13 @@ if __name__ == "__main__":
         dt = (curent_time - last_time)
         if dt < 0:
             dt = 0
-            
+        # last_time = rospy.get_rostime().to_sec()
+        last_time = curent_time
+        
         state.listner()
         state.compute(dt)
+
+        odom_quatr = transformations.quaternion_from_euler(0, 0 , state.theta)
 
         br.sendTransform((state.x, state.y, 0),
                             transformations.quaternion_from_euler(0, 0 , state.theta),
@@ -70,19 +74,21 @@ if __name__ == "__main__":
                             'odom')
 
 
-        odom_msg.header.stamp = curent_time
+        odom_msg.header.stamp = rospy.get_rostime()
         odom_msg.header.frame_id = 'odom'
         odom_msg.pose.pose.position.x = state.x
         odom_msg.pose.pose.position.y = state.y
         odom_msg.pose.pose.position.z = 0
-        odom_msg.pose.pose.orientation = odom_quatr
+        odom_msg.pose.pose.orientation.x = odom_quatr[0]
+        odom_msg.pose.pose.orientation.y = odom_quatr[1]
+        odom_msg.pose.pose.orientation.z = odom_quatr[2]
+        odom_msg.pose.pose.orientation.w = odom_quatr[3]
         odom_msg.child_frame_id = 'base_link'
         odom_msg.twist.twist.linear.x = state.vx
-        odom_msg.twist.twist.linear.x = state.vy
+        odom_msg.twist.twist.linear.y = state.vy
         odom_msg.twist.twist.angular.z = state.theta
 
 
         odom_pub.publish(odom_msg)
-        last_time = rospy.get_rostime().to_sec()
         rate.sleep()
    
